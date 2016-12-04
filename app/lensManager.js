@@ -47,7 +47,6 @@ $(document).ready(function(){
         var z_px_curr = 0;//z in pixel space
         for(var iLens = 0; iLens < stack.length; iLens++){
             var lens_curr = stack[iLens];
-            console.log(lens_curr.f);
             var lens_pos_px = posToPx(lens_curr.pos, z_grid);
             for(var iz = z_px_curr; iz < lens_pos_px; iz++){
                 matStack[iz] = freeSpaceMat(z_res);
