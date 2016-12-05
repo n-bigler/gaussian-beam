@@ -98,7 +98,7 @@ $(document).ready(function(){
         ctx.lineWidth = 2;
         ctx.strokeStyle = '#7495B9';
         ctx.moveTo(0, middle-beam.waistPx[0]);
-        for(var iz = 1; iz < z_grid_size; iz=iz+10){//only every 10 to speed up
+        for(var iz = 1; iz < z_grid_size; iz=iz+5){//only every 10 to speed up
             var waist = waistFromQ(beam.q[iz], beam);
             ctx.lineTo(iz, middle-beam.waistPx[iz]);
         }
@@ -107,7 +107,7 @@ $(document).ready(function(){
         //bottom
         ctx.beginPath();
         ctx.moveTo(0, middle+beam.waistPx[0]);
-        for(var iz = 1; iz < z_grid_size; iz=iz+10){//only every 10 speed up
+        for(var iz = 1; iz < z_grid_size; iz=iz+5){//only every 10 speed up
             var waist = waistFromQ(beam.q[iz], beam);            
             ctx.lineTo(iz, middle+beam.waistPx[iz]);
 
@@ -182,12 +182,12 @@ $(document).ready(function(){
     var setLensDOM = function(lensID){
         var html = ['<form id="lens'+lensID+'Form">'
                     ,'<legend>Lens '+(lensID+1)+'</legend>'
-                    ,'Position: '
+                    ,'<label for="lens'+lensID+'Pos">Position:</label>'
                     ,'<input type="range" min="0" max="1" value="0.5" data-orientation="vertical" name="lens'+lensID+'Pos">'
-                    , '<input name="lens'+lensID+'PosNumber" type="number" min="0" max="1" value="0.5"><br>'
-                    , 'Focal: '
-                    , '<input type="range" min="-1" max="1" step="0.01" value="0.1" data-orientation="vertical" name="lens'+lensID+'f">'
-                    , '<input name="lens'+lensID+'fNumber" type="number" min="-1" max="1" step="0.01" value="0.1"><br>'].join("");
+                    ,'<input name="lens'+lensID+'PosNumber" type="number" min="0" max="1" value="0.5"><br>'
+                    ,'<label for="lens'+lensID+'f">Lens focal:</label> '
+                    ,'<input type="range" min="-1" max="1" step="0.01" value="0.1" name="lens'+lensID+'f">'
+                    ,'<input name="lens'+lensID+'fNumber" type="number" min="-1" max="1" step="0.01" value="0.1"><br>'].join("");
         $('#lenses').append(html);
     }
 
@@ -294,6 +294,23 @@ $(document).ready(function(){
 
         updatePlot(beam);
     });
+
+    var $lambdaNumber = $('input[name=lambdaNumber]');
+    var $lambdaRange = $('input[name=lambda]');
+    $lambdaRange.on('input change', function(){
+        beam.l = $lambdaRange.val();
+        $lambdaNumber.val(beam.l);        
+        updatePlot(beam);
+    });
+
+
+    $lambdaNumber.on("input change", function(){
+        beam.l = $lambdaNumber.val();
+        $lambdaRange.val(beam.l);
+        updatePlot(beam);
+    });
+
+
 
 
     //manage add lens button

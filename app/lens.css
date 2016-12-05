@@ -3,8 +3,10 @@ h1{
     font-family: "Arial", Sans;
 }
 canvas {
-    /* width: 80%; */
-     margin: auto;
+    margin: auto;
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
 }
 
 /* beam size input */
@@ -45,6 +47,14 @@ canvas {
     font-size: 18px;
 }
 
+label {
+    width:100px;
+    margin-right: 10px;
+    display: inline-block;
+    font-family: "Arial";
+}
+
+
 input[type=number]{
     width: 10%;
     margin: auto;
@@ -55,6 +65,7 @@ input[type=range] {
   -webkit-appearance: none; /* Hides the slider so that custom slider can be made */
   width: 70%; /* Specific width is required for Firefox. */
   background: transparent; /* Otherwise white in Chrome */
+  margin-right: 5px;
 }
 
 input[type=range]::-webkit-slider-thumb {
