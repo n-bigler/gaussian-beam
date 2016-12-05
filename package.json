@@ -15,16 +15,17 @@
   },
   "build": {
     "appId": "ch.ethz.ulp.gaussianbeam",
-    "app-category-type": "public.app-category.education",
+    "mac.category": "public.app-category.education",
     "dmg": {},
     "win": {
-      "iconUrl": "http://eatodo.s3.amazonaws.com/icon.ico"
+
     }
   },
   "scripts": {
     "postinstall": "install-app-deps",
     "start": "electron ./app --enable-logging",
     "dev": "NODE_ENV='development' npm run start",
-    "dist": "build -mwl --x64 --ia32"
+    "dist": "build -mwl --x64 --ia32",
+    "pack": "build -mwl --x64 --ia32 --dir"
   }
 }
