@@ -138,7 +138,6 @@ $(document).ready(function(){
     }
 
     var $canvas = $("#lensCanvas");
-    var canvasRect = $canvas[0].getBoundingClientRect();
     var canvasHeight = $("#lensCanvas").height();
     var $waistSizeDisplay = $("#waistSizeDisplay");
     var drawWaists = function(beam){
@@ -322,8 +321,11 @@ $(document).ready(function(){
 
     //manage mouse measurement
     var $waistSizeDisplayMouse = $("#waistSizeDisplayMouse");
+
+
     $canvas.mousemove(function(evt){
-        var x = evt.clientX - canvasRect.left;
+        var canvasOffset = $canvas.offset();
+        var x = evt.clientX - canvasOffset.left;
         var ctx = $canvas[0].getContext("2d");
 
         drawBeam(beam);
