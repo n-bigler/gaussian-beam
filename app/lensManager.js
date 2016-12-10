@@ -3,6 +3,7 @@
 var math = require("mathjs");
 var lens = require("./lens");
 var $ = require("jquery");
+var graphics = require("./graphics");
 $(document).ready(function(){
     var z_max = 1;//1 meter max TODO: allow user to change this
     var z_grid_size = $("#lensCanvas").width();
@@ -26,15 +27,6 @@ $(document).ready(function(){
 
 
     //create the matrix stack
-    var posToPx = function(pos, z_grid){//return iz so that z_grid([iz] >= pos
-        for(var iz = 0; iz < z_grid_size; iz++){
-            if(z_grid[iz] >= pos){
-                return iz;
-            }
-        }
-        console.log("error");
-        return "error";
-    }
     var freeSpaceMat = function(d){
         return math.matrix([[1, d], [0, 1]]);
     }
@@ -47,7 +39,7 @@ $(document).ready(function(){
         var z_px_curr = 0;//z in pixel space
         for(var iLens = 0; iLens < stack.length; iLens++){
             var lens_curr = stack[iLens];
-            var lens_pos_px = posToPx(lens_curr.pos, z_grid);
+            var lens_pos_px = graphics.posToPx(lens_curr.pos, z_grid);
             for(var iz = z_px_curr; iz < lens_pos_px; iz++){
                 matStack[iz] = freeSpaceMat(z_res);
             }
@@ -84,87 +76,15 @@ $(document).ready(function(){
     }
     var ymax = 2e-3;//maximum y displayed (maximum beam waist)
     var waistToPixel = function(waist){
-        var canvasHeight = $("#lensCanvas").height();
+
         return math.floor(waist/ymax*canvasHeight/2);
     }
-    var drawBeam = function(beam){
-        var $canvas = $("#lensCanvas");
-        var ctx = $canvas[0].getContext("2d");
-        var canvasHeight = $("#lensCanvas").height();
-        var middle = canvasHeight/2;
-        //top
-        ctx.clearRect(0, 0, $canvas.width(), canvasHeight);
-        ctx.beginPath();
-        ctx.lineWidth = 2;
-        ctx.strokeStyle = '#7495B9';
-        ctx.moveTo(0, middle-beam.waistPx[0]);
-        for(var iz = 1; iz < z_grid_size; iz=iz+5){//only every 10 to speed up
-            var waist = waistFromQ(beam.q[iz], beam);
-            ctx.lineTo(iz, middle-beam.waistPx[iz]);
-        }
-        ctx.stroke();
-        
-        //bottom
-        ctx.beginPath();
-        ctx.moveTo(0, middle+beam.waistPx[0]);
-        for(var iz = 1; iz < z_grid_size; iz=iz+5){//only every 10 speed up
-            var waist = waistFromQ(beam.q[iz], beam);            
-            ctx.lineTo(iz, middle+beam.waistPx[iz]);
-
-        }
-        ctx.lineWidth = 2;
-        ctx.strokeStyle = '#7495B9';
-        ctx.stroke();
-    }
     
-    var drawLenses = function(stack, beam){
-        var ctx = $("#lensCanvas")[0].getContext("2d");
-        var center = $("#lensCanvas").height()/2;
-        for(var iLens = 0; iLens < stack.length; iLens++){
-            ctx.beginPath();
-            var pos = posToPx(stack[iLens].pos, z_grid);
-            ctx.moveTo(pos-10,center*1.8-20);
-            ctx.lineTo(pos,center*1.8);
-            ctx.lineTo(pos+10,center*1.8-20);
-            ctx.moveTo(pos,center*1.8);
-            ctx.lineTo(pos,center*0.2);
-            ctx.moveTo(pos-10,center*0.2+20);
-            ctx.lineTo(pos,center*0.2);
-            ctx.lineTo(pos+10,center*0.2+20);
-            ctx.lineWidth = 2;
-            ctx.strokeStyle = '#C37E8A';
-            ctx.stroke();
-        }
-    }
+    
 
     var $canvas = $("#lensCanvas");
     var canvasHeight = $("#lensCanvas").height();
     var $waistSizeDisplay = $("#waistSizeDisplay");
-    var drawWaists = function(beam){
-        var waistPosPx = [];
-        var prev = beam.waist[1] - beam.waist[0];
-        var curr = 0;
-        var txt = "Waist size: ";
-        for(var iz = 2; iz < z_grid.length; iz++){
-            curr = beam.waist[iz] - beam.waist[iz-1];
-            if(curr*prev <= 0 && prev<0){
-                waistPosPx.push(iz);
-                txt = txt+math.round(beam.waist[iz]*1e6)+" um, at " + (math.round(z_grid[iz]*1e2)/1e2) + " m";
-            }
-            prev = curr;
-        }
-        var ctx = $canvas[0].getContext("2d");
-        for(var iWaist = 0; iWaist < waistPosPx.length; iWaist++){
-            var px = waistPosPx[iWaist];
-            ctx.beginPath();
-            ctx.moveTo(px,canvasHeight/2+beam.waistPx[px]);
-            ctx.lineTo(px,canvasHeight/2-beam.waistPx[px]);
-            ctx.lineWidth = 2;
-            ctx.strokeStyle = 'red';
-            ctx.stroke();
-        }
-        $waistSizeDisplay.text(txt);
-    }
             
     var updatePlot = function(beam){
         //sort the lensStack
@@ -173,9 +93,11 @@ $(document).ready(function(){
         });
         var matStack = createMatStack(sortedStack);
         propBeam(matStack);
-        drawBeam(beam);
-        drawLenses(lensStack, beam);
-        drawWaists(beam);
+        var ctx = $canvas[0].getContext("2d");
+        graphics.drawBeam(beam, ctx, $canvas.width(), canvasHeight, z_grid);
+        graphics.drawLenses(lensStack, beam, ctx, canvasHeight, z_grid);
+        graphics.drawWaists(beam, ctx, canvasHeight, $waistSizeDisplay, z_grid);
+
    }
 
     var setLensDOM = function(lensID){
@@ -183,7 +105,7 @@ $(document).ready(function(){
                     ,'<legend>Lens '+(lensID+1)+'</legend>'
                     ,'<label for="lens'+lensID+'Pos">Position:</label>'
                     ,'<input type="range" min="0" max="1" value="0.5" data-orientation="vertical" name="lens'+lensID+'Pos">'
-                    ,'<input name="lens'+lensID+'PosNumber" type="number" min="0" max="1" value="0.5"><br>'
+                    ,'<input name="lens'+lensID+'PosNumber" type="number" min="0" max="1" value="0.5"p><br>'
                     ,'<label for="lens'+lensID+'f">Lens focal:</label> '
                     ,'<input type="range" min="-1" max="1" step="0.01" value="0.1" name="lens'+lensID+'f">'
                     ,'<input name="lens'+lensID+'fNumber" type="number" min="-1" max="1" step="0.01" value="0.1"><br>'].join("");
@@ -328,9 +250,9 @@ $(document).ready(function(){
         var x = evt.clientX - canvasOffset.left;
         var ctx = $canvas[0].getContext("2d");
 
-        drawBeam(beam);
-        drawLenses(lensStack, beam);
-        drawWaists(beam);
+        graphics.drawBeam(beam, ctx, $canvas.width(), canvasHeight, z_grid);
+        graphics.drawLenses(lensStack, beam, ctx, canvasHeight, z_grid);
+        graphics.drawWaists(beam, ctx, canvasHeight, $waistSizeDisplay, z_grid);
         ctx.beginPath();
         ctx.moveTo(x,canvasHeight/2+beam.waistPx[x]);
         ctx.lineTo(x,canvasHeight/2-beam.waistPx[x]);
