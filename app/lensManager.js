@@ -149,7 +149,7 @@ $(document).ready(function(){
             curr = beam.waist[iz] - beam.waist[iz-1];
             if(curr*prev <= 0 && prev<0){
                 waistPosPx.push(iz);
-                txt = txt+math.round(beam.waist[iz]*1e6)+" um   ";
+                txt = txt+math.round(beam.waist[iz]*1e6)+" um, at " + (math.round(z_grid[iz]*1e2)/1e2) + " m";
             }
             prev = curr;
         }
@@ -338,7 +338,7 @@ $(document).ready(function(){
         ctx.strokeStyle = '#F4C8A4'
         ctx.stroke();
         
-        $waistSizeDisplayMouse.text("Waist size (radius): " + math.round(beam.waist[x]*1e6) + " µm");
+        $waistSizeDisplayMouse.text("Waist size (radius): " + math.round(beam.waist[x]*1e6) + " µm, at " + (math.round(z_grid[x]*1e2)/1e2) + " m");
     });
 
 
