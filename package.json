@@ -6,7 +6,8 @@
   "author": "Nicolas Bigler <nbigler22@gmail.com>",
   "dependencies": {
     "jquery": "~3.1.1",
-    "mathjs": "~3.8.0"
+    "mathjs": "~3.8.0",
+    "electron-is-dev": "~0.1.2"
   },
   "devDependencies": {
     "electron-rebuild": "~1.4.0",
@@ -17,9 +18,7 @@
     "appId": "ch.ethz.ulp.gaussianbeam",
     "mac.category": "public.app-category.education",
     "dmg": {},
-    "win": {
-
-    }
+    "win": {}
   },
   "scripts": {
     "postinstall": "install-app-deps",
