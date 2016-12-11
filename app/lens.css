@@ -177,29 +177,41 @@ input[type=range]:focus::-ms-fill-upper {
 
 /* button */
 button {
-	box-shadow:inset 0px 1px 0px 0px #54a3f7;
-
-	background-color: #656684;
-	border-radius:3px;
-	border:1px solid #124d77;
-	cursor:pointer;
-	color:#ffffff;
-	font-family:Arial;
-        font-weight: bold;
-	font-size:13px;
-	padding:6px 24px;
-	text-decoration:none;
-	text-shadow:0px 1px 0px #154682;
-        margin: auto;
+    box-shadow:inset 0px 1px 0px 0px #54a3f7;
+    background-color: #656684;
+    border-radius:3px;
+    border:1px solid #124d77;
+    cursor:pointer;
+    color:#ffffff;
+    font-family:Arial;
+    font-weight: bold;
+    font-size:13px;
+    padding:6px 24px;
+    text-decoration:none;
+    text-shadow:0px 1px 0px #154682;
+    margin: auto;
 }
 button:hover {
-	background-color: #595a73;
+    background-color: #595a73;
 }
 button:active {
-	position:relative;
-	top:1px;
+    position:relative;
+    top:1px;
 }
 
 #addLensAndWaistSize{
     text-align: center;
+}
+
+.removeLensButton{
+    position: absolute;
+    background-color: #656684;
+    margin-left:77.5%;
+    margin-top: -10px;
+    display: block;
+    z-index: 100;
+    padding: 5px;
+}
+.removeLensButton:active{
+        
 }
