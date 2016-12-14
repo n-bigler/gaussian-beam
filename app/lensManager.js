@@ -23,7 +23,8 @@ $(document).ready(function(){
             
     var updatePlot = function(beam){
         //sort the lensStack
-        var sortedStack = lensStack.slice().sort(function(a, b){
+        var sortedStack = lensStack.slice();
+        sortedStack.sort(function(a, b){
             return a.pos - b.pos;
         });
         prop.createMatStack(sortedStack);
@@ -37,7 +38,7 @@ $(document).ready(function(){
    }
 
     var setLensDOM = function(lensID){
-        var html = ['<div><button class="removeLensButton" type="button" name="lens'+lensID+'Remove">x</button><form id="lens'+lensID+'Form">'
+        var html = ['<div id="lens'+lensID+'"><button class="removeLensButton" type="button" name="lens'+lensID+'Remove">x</button><form id="lens'+lensID+'Form">'
                     ,'<legend>Lens '+(lensID+1)+'</legend>'
 
                     ,'<label for="lens'+lensID+'Pos">Position:</label>'
@@ -50,10 +51,15 @@ $(document).ready(function(){
         $('#lenses').append(html);
     }
 
+    var removeLensDOM = function(lensID){
+        $('#lens'+lensID).remove();
+    }
+
     var setLensListeners = function(lensID){
         var $lensPosNumber = $('input[name=lens'+lensID+'PosNumber]');
         var $lensfNumber = $('input[name=lens'+lensID+'fNumber]');
         var $lensPosRange = $('input[name=lens'+lensID+'Pos]');
+
         $lensPosRange.attr("step", prop.z_res);
         $lensPosNumber.attr("step", prop.z_res);
         $lensPosRange.attr("max", prop.z_grid[prop.z_grid.length-1]);
@@ -85,11 +91,44 @@ $(document).ready(function(){
 
             updatePlot(beam);
         });
+
+        var $lensRemove = $('button[name=lens'+lensID+'Remove]');
+        $lensRemove.on("click", function(){
+            console.log("before");
+            console.log(lensStack);
+            for(var iLens = 0; iLens < lensStack.length; iLens++){
+                console.log(lensStack[iLens].id);
+            }
+            lensStack.splice(lensID, 1);
+            console.log("after");
+            console.log(lensStack);
+            for(var iLens = 0; iLens < lensStack.length; iLens++){
+                console.log(lensStack[iLens].id);
+            }
+
+            removeLensDOM(lensID);
+            updatePlot(beam);
+        });
     }
 
     var addLens = function(){
-        var newLens = new lens.Lens(100e-3, 0.5, lensStack.length);
-        lensStack.push(newLens);
+        //need to find a new id
+        var newID = 0;
+        var idFound = 1;
+        do{
+            idFound = 1;
+            for(var iLens = 0; iLens < lensStack.length; iLens++){
+                if(lensStack[iLens].id == newID){
+                    newID++;
+                    idFound = 0;
+                }
+            }
+        }while(!idFound);
+        console.log("new id: "+newID);
+        var newLens = new lens.Lens(100e-3, 0.5, newID);
+        lensStack[newLens.id] = newLens;
+        console.log(lensStack);
+
         setLensDOM(newLens.id);
         setLensListeners(newLens.id);
         updatePlot(beam);

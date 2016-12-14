@@ -194,10 +194,7 @@ button {
 button:hover {
     background-color: #595a73;
 }
-button:active {
-    position:relative;
-    top:1px;
-}
+
 
 #addLensAndWaistSize{
     text-align: center;
@@ -209,9 +206,6 @@ button:active {
     margin-left:77.5%;
     margin-top: -10px;
     display: block;
-    z-index: 100;
+    z-index: 10;
     padding: 5px;
-}
-.removeLensButton:active{
-        
 }
