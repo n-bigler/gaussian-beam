@@ -21,7 +21,7 @@ function createWindow () {
 
   if(isDev){
       // Open the DevTools.
-      win.webContents.openDevTools()
+//      win.webContents.openDevTools();
   }
 
   // Emitted when the window is closed.
@@ -64,8 +64,13 @@ const template = [
                 label: 'Save',
                 accelerator: 'CmdOrCtrl+S',
                 click(){
-                    var defPath = path.join(app.getPath('home'), 'test.txt');
-                    dialog.showSaveDialog({title:'Save As...', defaultPath: defPath}, function(fileName) {
+                    var defPath = path.join(app.getPath('home'), 'lenses.conf');
+                    var filters = [
+                        {name: 'Lens configuration files', extensions: ['conf']},
+                        {name: 'All Files', extensions: ['*']}
+                    ];
+
+                    dialog.showSaveDialog({title:'Save As...', defaultPath: defPath, filters: filters}, function(fileName) {
                         if (fileName === undefined){
                             console.log("You didn't save the file");
                             return;
@@ -76,7 +81,6 @@ const template = [
                             
                     });
                 }
-                    
             },
             {
                 label: 'Save As...',
@@ -88,7 +92,12 @@ const template = [
                 accelerator: 'CmdOrCtrl+O',
                 click(){
                     var defPath = app.getPath('home');
-                    dialog.showOpenDialog({title:'Open...', defaultPath: defPath, propertied: ['openFile']}, function(fileName) {
+                    var filters = [
+                        {name: 'Lens configuration files', extensions: ['conf']},
+                        {name: 'All Files', extensions: ['*']}
+                    ];
+
+                    dialog.showOpenDialog({title:'Open...', defaultPath: defPath, properties: ['openFile'], filters: filters}, function(fileName) {
                         if (fileName === undefined){
                             console.log("You didn't open the file");
                             return;
