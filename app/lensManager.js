@@ -67,18 +67,25 @@ $(document).ready(function(){
         var $lensPosNumber = $('input[name=lens'+lensID+'PosNumber]');
         var $lensfNumber = $('input[name=lens'+lensID+'fNumber]');
         var $lensPosRange = $('input[name=lens'+lensID+'Pos]');
+        var $lensfRange = $('input[name=lens'+lensID+'f]');
 
         $lensPosRange.attr("step", prop.z_res);
         $lensPosNumber.attr("step", prop.z_res);
         $lensPosRange.attr("max", prop.z_grid[prop.z_grid.length-1]);
         $lensPosNumber.attr("max", prop.z_grid[prop.z_grid.length-1]);
+
+        $lensPosNumber.val(lensStack[lensID].pos);
+        $lensPosRange.val(lensStack[lensID].pos);
+        $lensfNumber.val(lensStack[lensID].f);
+        $lensfRange.val(lensStack[lensID].f);
+
         $lensPosRange.on('input change', function(){
             lensStack[lensID].pos = parseFloat($lensPosRange.val());
             $lensPosNumber.val(lensStack[lensID].pos);
             updatePlot(beam);
         });
 
-        var $lensfRange = $('input[name=lens'+lensID+'f]');
+
         $lensfRange.on('input change', function(){
             lensStack[lensID].f = parseFloat($lensfRange.val());
             $lensfNumber.val(lensStack[lensID].f);                
@@ -262,10 +269,61 @@ $(document).ready(function(){
         fs.write(fileName, {lenses: lensStack, settings: settings});
     });
 
+    var removeAllLenses = function(){
+        for(var iLens = 0; iLens < lensStack.length; iLens++){
+            if(lensStack[iLens] != undefined){
+                removeLensDOM(iLens);
+                lensStack[iLens] = undefined;
+            }
+        }
+    }
+    
+    //modify DOM so that it follows beam properties
+    var updateBeamDOM = function(beam){
+        var $w0Number = $('input[name=w0Number]');
+        var $w0Range = $('input[name=w0]');
+        $w0Number.val(beam.w0);
+        $w0Range.val(beam.w0);
+
+        var $lambdaNumber = $('input[name=lambdaNumber]');
+        var $lambdaRange = $('input[name=lambda]');
+        $lambdaNumber.val(beam.l);
+        $lambdaRange.val(beam.l);
+    }
+
+    var updatePropDOM = function(prop){
+        var $zmaxNumber = $('input[name=zmaxNumber]');
+        var $zmaxRange = $('input[name=zmax]');
+        $zmaxNumber.val(prop.z_max);
+        $zmaxRange.val(prop.z_max);
+        var $ymaxNumber = $('input[name=ymaxNumber]');
+        var $ymaxRange = $('input[name=ymax]');
+        $ymaxNumber.val(prop.y_max);
+        $ymaxRange.val(prop.y_max);
+    }
+
     ipcRenderer.on('open-file', function(evt, fileName){
         var read = fs.read(fileName, 'json');
-        lensStack = read.lenses;
+        var newLensStack = read.lenses;
         var settings = read.settings;
+        //start with lenses
+        removeAllLenses();
+        for(var iLens = 0; iLens < newLensStack.length; iLens++){
+            var lens_curr = newLensStack[iLens];
+            lensStack[lens_curr.id] = lens_curr;
+            setLensDOM(lens_curr.id);
+            setLensListeners(lens_curr.id);
+        }
+        //then update the rest
+        beam.w0 = settings.w0;
+        beam.l = settings.l;
+        updateBeamDOM(beam);
+        prop.z_max = settings.z_max;
+        prop.z_res = prop.z_max/prop.canvasWidth;
+        prop.build_z_grid();
+        prop.y_max = settings.y_max;
+        updatePropDOM(prop);
+        updatePlot(beam);
     });
 
 
