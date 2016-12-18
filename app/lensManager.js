@@ -6,6 +6,9 @@ var $ = require("jquery");
 var graphics = require("./graphics");
 var beam_class = require("./beam");
 var prop_class = require("./prop");
+var ipcRenderer = require('electron').ipcRenderer;
+const fs = require('fs-jetpack');
+
 $(document).ready(function(){
     var z_max = 1;//1 meter max TODO: allow user to change this
     var z_grid = [];
@@ -249,7 +252,26 @@ $(document).ready(function(){
         $waistSizeDisplayMouse.text("Waist size (radius): " + math.round(beam.waist[x]*1e6) + " µm, at " + (math.round(prop.z_grid[x]*1e2)/1e2) + " m");
     });
 
+    ipcRenderer.on('save-file', function(evt, fileName){
+        var settings = {
+            z_max: prop.z_max,
+            y_max: prop.y_max,
+            l: beam.l,
+            w0: beam.w0
+        }
+        fs.write(fileName, {lenses: lensStack, settings: settings});
+    });
+
+    ipcRenderer.on('open-file', function(evt, fileName){
+        var read = fs.read(fileName, 'json');
+        lensStack = read.lenses;
+        var settings = read.settings;
+    });
+
 
     addLens();
     updatePlot(beam);
+
+
 });
+

@@ -1,6 +1,6 @@
-const {app, BrowserWindow, Menu} = require('electron')
-const path = require('path')
-const url = require('url')
+const {app, BrowserWindow, Menu, dialog} = require('electron');
+const path = require('path');
+const url = require('url');
 const isDev = require('electron-is-dev');
 
 // Keep a global reference of the window object, if you don't, the window will
@@ -54,176 +54,189 @@ app.on('activate', () => {
     createWindow()
   }
 })
-
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.
 const template = [
-  {
-    label: 'Edit',
-    submenu: [
-      {
-        role: 'undo'
-      },
-      {
-        role: 'redo'
-      },
-      {
-        type: 'separator'
-      },
-      {
-        role: 'cut'
-      },
-      {
-        role: 'copy'
-      },
-      {
-        role: 'paste'
-      },
-      {
-        role: 'pasteandmatchstyle'
-      },
-      {
-        role: 'delete'
-      },
-      {
-        role: 'selectall'
-      }
-    ]
-  },
-  {
-    label: 'View',
-    submenu: [
-      {
-        label: 'Reload',
-        accelerator: 'CmdOrCtrl+R',
-        click (item, focusedWindow) {
-          if (focusedWindow) focusedWindow.reload()
-        }
-      },
-      {
-        label: 'Toggle Developer Tools',
-        accelerator: process.platform === 'darwin' ? 'Alt+Command+I' : 'Ctrl+Shift+I',
-        click (item, focusedWindow) {
-          if (focusedWindow) focusedWindow.webContents.toggleDevTools()
-        }
-      },
-      {
-        type: 'separator'
-      },
-      {
-        role: 'resetzoom'
-      },
-      {
-        role: 'zoomin'
-      },
-      {
-        role: 'zoomout'
-      },
-      {
-        type: 'separator'
-      },
-      {
-        role: 'togglefullscreen'
-      }
-    ]
-  },
-  {
-    role: 'window',
-    submenu: [
-      {
-        role: 'minimize'
-      },
-      {
-        role: 'close'
-      }
-    ]
-  },
-  {
-    role: 'help',
-    submenu: [
-      {
-        label: 'Learn More',
-        click () { require('electron').shell.openExternal('http://electron.atom.io') }
-      }
-    ]
-  }
+    {
+        label: 'File',
+        submenu:[
+            {
+                label: 'Save',
+                accelerator: 'CmdOrCtrl+S',
+                click(){
+                    var defPath = path.join(app.getPath('home'), 'test.txt');
+                    dialog.showSaveDialog({title:'Save As...', defaultPath: defPath}, function(fileName) {
+                        if (fileName === undefined){
+                            console.log("You didn't save the file");
+                            return;
+                        }
+                        // fileName is a string that contains the path and filename created in the save file dialog.  
+                        //we ask the renderer to save
+                        win.webContents.send('save-file', fileName);
+                            
+                    });
+                }
+                    
+            },
+            {
+                label: 'Save As...',
+                accelerator: 'CmdOrCtrl+Alt+F',
+                
+            },
+            {
+                label: 'Open...',
+                accelerator: 'CmdOrCtrl+O',
+                click(){
+                    var defPath = app.getPath('home');
+                    dialog.showOpenDialog({title:'Open...', defaultPath: defPath, propertied: ['openFile']}, function(fileName) {
+                        if (fileName === undefined){
+                            console.log("You didn't open the file");
+                            return;
+                        }
+                        // fileName is a string that contains the path and filename created in the save file dialog.  
+                        //we ask the renderer to save
+                        win.webContents.send('open-file', fileName[0]);
+                            
+                    });
+                }
+
+            }
+        ]
+    },
+    {
+        label: 'View',
+        submenu: [
+            {
+                label: 'Reload',
+                accelerator: 'CmdOrCtrl+R',
+                click (item, focusedWindow) {
+                    if (focusedWindow) focusedWindow.reload()
+                }
+            },
+            {
+                label: 'Toggle Developer Tools',
+                accelerator: process.platform === 'darwin' ? 'Alt+Command+I' : 'Ctrl+Shift+I',
+                click (item, focusedWindow) {
+                    if (focusedWindow) focusedWindow.webContents.toggleDevTools()
+                }
+            },
+            {
+                type: 'separator'
+            },
+            {
+                role: 'resetzoom'
+            },
+            {
+                role: 'zoomin'
+            },
+            {
+                role: 'zoomout'
+            },
+            {
+                type: 'separator'
+            },
+            {
+                role: 'togglefullscreen'
+            }
+        ]
+    },
+    {
+        role: 'window',
+        submenu: [
+            {
+                role: 'minimize'
+            },
+            {
+                role: 'close'
+            }
+        ]
+    },
+    {
+        role: 'help',
+        submenu: [
+            {
+                label: 'Learn More',
+                click () { require('electron').shell.openExternal('http://electron.atom.io') }
+            }
+        ]
+    }
 ]
 
 if (process.platform === 'darwin') {
-  template.unshift({
-    label: app.getName(),
-    submenu: [
-      {
-        role: 'about'
-      },
-      {
-        type: 'separator'
-      },
-      {
-        role: 'services',
-        submenu: []
-      },
-      {
-        type: 'separator'
-      },
-      {
-        role: 'hide'
-      },
-      {
-        role: 'hideothers'
-      },
-      {
-        role: 'unhide'
-      },
-      {
-        type: 'separator'
-      },
-      {
-        role: 'quit'
-      }
-    ]
-  })
-  // Edit menu.
-  template[1].submenu.push(
-    {
-      type: 'separator'
-    },
-    {
-      label: 'Speech',
-      submenu: [
+    template.unshift({
+        label: app.getName(),
+        submenu: [
+            {
+                role: 'about'
+            },
+            {
+                type: 'separator'
+            },
+            {
+                role: 'services',
+                submenu: []
+            },
+            {
+                type: 'separator'
+            },
+            {
+                role: 'hide'
+            },
+            {
+                role: 'hideothers'
+            },
+            {
+                role: 'unhide'
+            },
+            {
+                type: 'separator'
+            },
+            {
+                role: 'quit'
+            }
+        ]
+    })
+    // Edit menu.
+    template[1].submenu.push(
         {
-          role: 'startspeaking'
+            type: 'separator'
         },
         {
-          role: 'stopspeaking'
+            label: 'Speech',
+            submenu: [
+                {
+                    role: 'startspeaking'
+                },
+                {
+                    role: 'stopspeaking'
+                }
+            ]
         }
-      ]
-    }
-  )
-  // Window menu.
-  template[3].submenu = [
-    {
-      label: 'Close',
-      accelerator: 'CmdOrCtrl+W',
-      role: 'close'
-    },
-    {
-      label: 'Minimize',
-      accelerator: 'CmdOrCtrl+M',
-      role: 'minimize'
-    },
-    {
-      label: 'Zoom',
-      role: 'zoom'
-    },
-    {
-      type: 'separator'
-    },
-    {
-      label: 'Bring All to Front',
-      role: 'front'
-    }
-  ]
+    )
+    // Window menu.
+    template[3].submenu = [
+        {
+            label: 'Close',
+            accelerator: 'CmdOrCtrl+W',
+            role: 'close'
+        },
+        {
+            label: 'Minimize',
+            accelerator: 'CmdOrCtrl+M',
+            role: 'minimize'
+        },
+        {
+            label: 'Zoom',
+            role: 'zoom'
+        },
+        {
+            type: 'separator'
+        },
+        {
+            label: 'Bring All to Front',
+            role: 'front'
+        }
+    ]
 }
 
 const menu = Menu.buildFromTemplate(template)
