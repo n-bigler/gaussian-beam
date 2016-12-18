@@ -23,7 +23,12 @@ $(document).ready(function(){
             
     var updatePlot = function(beam){
         //sort the lensStack
-        var sortedStack = lensStack.slice();
+        var sortedStack = [];
+        for(var iLens = 0; iLens < lensStack.length; iLens++){
+            if(lensStack[iLens] != undefined && lensStack[iLens] != null){
+                sortedStack.push(lensStack[iLens]);
+            }
+        }
         sortedStack.sort(function(a, b){
             return a.pos - b.pos;
         });
@@ -32,7 +37,7 @@ $(document).ready(function(){
         beam.propBeam(prop);
         var ctx = $canvas[0].getContext("2d");
         graphics.drawBeam(beam, ctx, prop);
-        graphics.drawLenses(lensStack, beam, ctx, prop);
+        graphics.drawLenses(sortedStack, beam, ctx, prop);
         graphics.drawWaists(beam, ctx, prop, $waistSizeDisplay);
 
    }
@@ -97,13 +102,18 @@ $(document).ready(function(){
             console.log("before");
             console.log(lensStack);
             for(var iLens = 0; iLens < lensStack.length; iLens++){
-                console.log(lensStack[iLens].id);
+                if(lensStack[iLens] != undefined){
+                    console.log(lensStack[iLens].id);
+                }
             }
-            lensStack.splice(lensID, 1);
+            // lensStack.splice(lensID, 1);
+            lensStack[lensID] = undefined;
             console.log("after");
             console.log(lensStack);
             for(var iLens = 0; iLens < lensStack.length; iLens++){
-                console.log(lensStack[iLens].id);
+                if(lensStack[iLens] != undefined){
+                    console.log(lensStack[iLens].id);
+                }
             }
 
             removeLensDOM(lensID);
@@ -114,16 +124,17 @@ $(document).ready(function(){
     var addLens = function(){
         //need to find a new id
         var newID = 0;
-        var idFound = 1;
-        do{
-            idFound = 1;
-            for(var iLens = 0; iLens < lensStack.length; iLens++){
-                if(lensStack[iLens].id == newID){
-                    newID++;
-                    idFound = 0;
-                }
+        var idFound = 0;
+        //we check if some ids are free (if some lenses are set to undefined)
+        for(var iLens = 0; iLens < lensStack.length && !idFound; iLens++){
+            if(lensStack[iLens] === undefined){
+                newID = iLens;
+                idFound = 1;
             }
-        }while(!idFound);
+        }
+        if(!idFound){//true if there was no "undefined", so we need to add after the last lens
+            newID = lensStack.length;
+        }
         console.log("new id: "+newID);
         var newLens = new lens.Lens(100e-3, 0.5, newID);
         lensStack[newLens.id] = newLens;
