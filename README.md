@@ -5,6 +5,9 @@ Use this app to propagate a gaussian beam through a serie of thin lenses. It all
 ![Gaussia-beam](./img/gaussian-beam-screenshot.png?raw=true "Screenshot")
 
 ## Installation
+Binaries are available for windows 64-bit and OS X. See [the release page](https://github.com/n-bigler/gaussian-beam/releases).
+
+## Installation from sources
 You will need to have [npm](https://www.npmjs.com/ "npm's homepage") installed. Then just do
 
 ```javascript
