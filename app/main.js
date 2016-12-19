@@ -31,6 +31,7 @@ function createWindow () {
     // when you should delete the corresponding element.
     win = null
   })
+  Menu.setApplicationMenu(menu);
 }
 
 // This method will be called when Electron has finished
@@ -61,7 +62,7 @@ const template = [
         label: 'File',
         submenu:[
             {
-                label: 'Save',
+                label: 'Save As...',
                 accelerator: 'CmdOrCtrl+S',
                 click(){
                     var defPath = path.join(app.getPath('home'), 'lenses.conf');
@@ -75,17 +76,12 @@ const template = [
                             console.log("You didn't save the file");
                             return;
                         }
-                        // fileName is a string that contains the path and filename created in the save file dialog.  
+                        // fileName is a string that contains the path and filename created in the save file dialog.
                         //we ask the renderer to save
                         win.webContents.send('save-file', fileName);
-                            
+
                     });
                 }
-            },
-            {
-                label: 'Save As...',
-                accelerator: 'CmdOrCtrl+Alt+F',
-                
             },
             {
                 label: 'Open...',
@@ -102,10 +98,10 @@ const template = [
                             console.log("You didn't open the file");
                             return;
                         }
-                        // fileName is a string that contains the path and filename created in the save file dialog.  
+                        // fileName is a string that contains the path and filename created in the save file dialog.
                         //we ask the renderer to save
                         win.webContents.send('open-file', fileName[0]);
-                            
+
                     });
                 }
 
@@ -249,4 +245,3 @@ if (process.platform === 'darwin') {
 }
 
 const menu = Menu.buildFromTemplate(template)
-Menu.setApplicationMenu(menu)
