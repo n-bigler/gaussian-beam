@@ -16,14 +16,19 @@ $(document).ready(function(){
     
     var lensStack = [];
 
-    var beam = new beam_class.Beam(1e-3, 800e-9);
+    var beam = new beam_class.Beam(300e-6, 800e-9);
     var prop = new prop_class.Prop(1, 2e-3, $("#lensCanvas").width(), $("#lensCanvas").height());    
     
 
     var $canvas = $("#lensCanvas");
     var canvasHeight = $("#lensCanvas").height();
     var $waistSizeDisplay = $("#waistSizeDisplay");
-            
+         
+    /**
+     * Updates the beam plot by first recalculating the matrice stack and then
+     * updating the graphics
+     * @beam The beam object
+     */
     var updatePlot = function(beam){
         //sort the lensStack
         var sortedStack = [];
@@ -37,14 +42,19 @@ $(document).ready(function(){
         });
         prop.createMatStack(sortedStack);
 
-        beam.propBeam(prop);
+
         var ctx = $canvas[0].getContext("2d");
-        graphics.drawBeam(beam, ctx, prop);
+        beam.propBeam(prop, {resonator: true});
+        graphics.drawBeam(beam, ctx, prop, {resonator: true});
+
         graphics.drawLenses(sortedStack, beam, ctx, prop);
         graphics.drawWaists(beam, ctx, prop, $waistSizeDisplay);
-
    }
 
+    /**
+     * Set un the range sliders and the number inputs for a new lens
+     * @lensID The id of the new lens
+     */
     var setLensDOM = function(lensID){
         var html = ['<div id="lens'+lensID+'"><button class="removeLensButton" type="button" name="lens'+lensID+'Remove">x</button><form id="lens'+lensID+'Form">'
                     ,'<legend>Lens '+(lensID+1)+'</legend>'
@@ -238,25 +248,23 @@ $(document).ready(function(){
 
     //manage mouse measurement
     var $waistSizeDisplayMouse = $("#waistSizeDisplayMouse");
-
-
     $canvas.mousemove(function(evt){
         var canvasOffset = $canvas.offset();
         var x = math.floor(evt.clientX - canvasOffset.left);
         var ctx = $canvas[0].getContext("2d");
 
-        graphics.drawBeam(beam, ctx, prop);
+        graphics.drawBeam(beam, ctx, prop, {resonator: true});
         graphics.drawLenses(lensStack, beam, ctx, prop);
         graphics.drawWaists(beam, ctx, prop, $waistSizeDisplay);
 
         ctx.beginPath();
-        ctx.moveTo(x,canvasHeight/2+beam.waistPx[x]);
-        ctx.lineTo(x,canvasHeight/2-beam.waistPx[x]);
+        ctx.moveTo(x,canvasHeight/2+beam.waistPx.forward[x]);
+        ctx.lineTo(x,canvasHeight/2-beam.waistPx.forward[x]);
         ctx.lineWidth = 2;
         ctx.strokeStyle = '#F4C8A4';
         ctx.stroke();
         
-        $waistSizeDisplayMouse.text("Waist size (radius): " + math.round(beam.waist[x]*1e6) + " µm, at " + (math.round(prop.z_grid[x]*1e2)/1e2) + " m");
+        $waistSizeDisplayMouse.text("Waist size (radius): " + math.round(beam.waist.forward[x]*1e6) + " µm, at " + (math.round(prop.z_grid[x]*1e2)/1e2) + " m");
     });
 
     ipcRenderer.on('save-file', function(evt, fileName){

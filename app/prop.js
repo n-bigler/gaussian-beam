@@ -1,6 +1,14 @@
 "use strict";
 var math = require("mathjs");
 var graphic = require("./graphics");
+/**
+ * A prpopagation structure. Represents the space in which we will
+ * propagate the beam.
+ * @z_max The maximum of the grid in the propagation direction
+ * @y_max The maximum of the grid in the beam waist direction
+ * @canvasWidth The width of the canvas object on which the beam is drawn
+ * @canvasHeight The height of the canvas object on which the beam is drawn
+ */
 var Prop = function(z_max, y_max, canvasWidth, canvasHeight){
     this.canvasWidth = canvasWidth;
     this.canvasHeight = canvasHeight;
@@ -9,7 +17,12 @@ var Prop = function(z_max, y_max, canvasWidth, canvasHeight){
     this.z_res = z_max/this.canvasWidth;
     this.y_max = y_max;
     this.matStack = [];
-    this.posToPx = function(pos){//return iz so that z_grid([iz] >= pos
+    
+    /**
+     * Returns iz so that z_grid([iz]) >= pos
+     * @pos The position of the lens in meter
+     */
+    this.posToPx = function(pos){
         for(var iz = 0; iz < this.z_grid.length; iz++){
             if(this.z_grid[iz] >= pos){
                 return iz;
@@ -31,6 +44,12 @@ var Prop = function(z_max, y_max, canvasWidth, canvasHeight){
     this.lensMat = function(f){
         return math.matrix([[1, 0], [-1/f, 1]]);
     }
+
+    /**
+     * Create the matrix stack. We have one matrix for each pixel, either 
+     * a freespace matrix or a lens matrix.
+     * @stack The set of lenses ordered depending of their position
+     */
     this.createMatStack = function(stack){
         var matStack = [];
         var z_px_curr = 0;//z in pixel space
