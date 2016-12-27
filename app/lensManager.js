@@ -18,7 +18,7 @@ $(document).ready(function(){
 
     var beam = new beam_class.Beam(300e-6, 800e-9);
     var prop = new prop_class.Prop(1, 2e-3, $("#lensCanvas").width(), $("#lensCanvas").height());    
-    
+    var resonatorMode = false;
 
     var $canvas = $("#lensCanvas");
     var canvasHeight = $("#lensCanvas").height();
@@ -44,8 +44,8 @@ $(document).ready(function(){
 
 
         var ctx = $canvas[0].getContext("2d");
-        beam.propBeam(prop, {resonator: true});
-        graphics.drawBeam(beam, ctx, prop, {resonator: true});
+        beam.propBeam(prop, {resonator: resonatorMode});
+        graphics.drawBeam(beam, ctx, prop, {resonator: resonatorMode});
 
         graphics.drawLenses(sortedStack, beam, ctx, prop);
         graphics.drawWaists(beam, ctx, prop, $waistSizeDisplay);
@@ -247,9 +247,13 @@ $(document).ready(function(){
         updatePlot(beam);
     });
 
-
-
-
+    
+    //manage resonator checkbox
+    var $resonatorCB = $('#resonatorCheckbox');
+    $resonatorCB.on('click', function(){
+        resonatorMode = $(this).find('input[type=checkbox]').prop('checked');
+        updatePlot(beam);
+    });
     //manage add lens button
     $('button[name=addLensButton]').on('click', function(){
         addLens();
