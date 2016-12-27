@@ -56,15 +56,30 @@ $(document).ready(function(){
      * @lensID The id of the new lens
      */
     var setLensDOM = function(lensID){
-        var html = ['<div id="lens'+lensID+'"><button class="removeLensButton" type="button" name="lens'+lensID+'Remove">x</button><form id="lens'+lensID+'Form">'
+        var html = ['<div id="lens'+lensID+'" class="col-xs-6 lensGroup">'
+                    ,'<div class="text-right removeButton">'
+                    ,'<button type="button" name="lens'+lensID+'Remove">x</button>'                    
+                    ,'</div>'
+                    ,'<form id="lens'+lensID+'Form">'
                     ,'<legend>Lens '+(lensID+1)+'</legend>'
-
-                    ,'<label for="lens'+lensID+'Pos">Position:</label>'
-                    ,'<input type="range" min="0" max="1" value="0.5" data-orientation="vertical" name="lens'+lensID+'Pos">'
-                    ,'<input name="lens'+lensID+'PosNumber" type="number" min="0" max="1" value="0.5"p><br>'
-                    ,'<label for="lens'+lensID+'f">Lens focal:</label> '
-                    ,'<input type="range" min="-1" max="1" step="0.01" value="0.1" name="lens'+lensID+'f">'
-                    ,'<input name="lens'+lensID+'fNumber" type="number" min="-1" max="1" step="0.01" value="0.1"><br>'
+                    ,'<div class="form-group row">'
+                    ,'<label class="col-xs-2 nopadding col-form-label" for="lens'+lensID+'Pos">Position:</label>'
+                    ,'<div class="col-xs-7 nopadding">'
+                    ,'<input class="form-control" type="range" min="0" max="1" value="0.5" data-orientation="vertical" name="lens'+lensID+'Pos">'
+                    ,'</div>'
+                    ,'<div class="col-xs-3">'
+                    ,'<input class="form-control" name="lens'+lensID+'PosNumber" type="number" min="0" max="1" value="0.5"p>'
+                    ,'</div>'
+                    ,'</div>'
+                    ,'<div class="form-group row">'
+                    ,'<label class="col-xs-2 nopadding col-form-label" for="lens'+lensID+'f">Focal:</label> '
+                    ,'<div class="col-xs-7 nopadding">'
+                    ,'<input class="form-control" type="range" min="-1" max="1" step="0.01" value="0.1" name="lens'+lensID+'f">'
+                    ,'</div>'
+                    ,'<div class="col-xs-3">'
+                    ,'<input class="form-control" name="lens'+lensID+'fNumber" type="number" min="-1" max="1" step="0.01" value="0.1">'
+                    ,'</div>'
+                    ,'</div>'
                     ,'</form></div>'].join("");
         $('#lenses').append(html);
     }
@@ -210,14 +225,10 @@ $(document).ready(function(){
 
 
     $zmaxNumber.on("input change", function(){
-        z_max = $zmaxNumber.val();
-        prop.z_res = z_max/z_grid_size;
-        $zmaxRange.val(z_max);
-        z_grid = [];
-        for(var iz = 0; iz < z_grid_size; iz++){
-            z_grid[iz] = iz*prop.z_res;
-        }
-
+        prop.z_max = $zmaxNumber.val();
+        $zmaxRange.val(prop.z_max);
+        prop.z_res = prop.z_max/prop.canvasWidth;
+        prop.build_z_grid();
         updatePlot(beam);
     });
 

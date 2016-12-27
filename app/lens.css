@@ -1,42 +1,57 @@
-h1{
-    text-align: center;
-    font-family: "Arial", Sans;
-}
-canvas {
-    margin: auto;
-    margin-left: auto;
-    margin-right: auto;
-    display: block;
-}
+/* h1{ */
+/*     text-align: center; */
+/*     font-family: "Arial", Sans; */
+/* } */
+/* canvas { */
+/*     margin: auto; */
+/*     margin-left: auto; */
+/*     margin-right: auto; */
+/*     display: block; */
+/* } */
 
-/* beam size input */
-#beam{
+.beamSizeGroup{
+
+}
+.beamSizeGroup form{
     background-color: #D1E2E2;
-    width: 80%;
-    padding: 5px;
-    margin: auto;
+    padding: 32px;
 }
 
-#beam form{
-    padding: 10px;
+.beamSizeGroup label{
+    margin-top: 5px;
 }
-/* lens inputs */
-#lenses{
+
+.nopadding {
+   padding: 0px !important;
+   margin: 0 !important;
+}
+.lensGroup{
     background-color: #F4C8A4;
-    width: 80%;
-    padding: 5px;
-    margin: auto;
+    padding: 12px;
 }
 
-#lenses form{
-    padding: 10px;
+.lensGroup form{
+    padding: 20px;
+    padding-bottom: 0px;
     border: 3px dashed #7a7a7a;
-    background-color: transparent;
-    margin: 10px;
 }
 
-#lenses legend{
-    margin-top: -20px;
+.removeButton{
+    position: absolute;
+    margin-left:87.5%;
+    margin-top: -14px;
+    z-index: 10;
+    padding: 5px;
+}
+
+.removeButton button{
+    background-color: #656684;
+    color:white;
+}
+
+.lensGroup legend{
+    margin-top: -34px;
+    border: none;
     margin-left: 8px;
     margin-bottom: 10px;
     width: 60px;
@@ -47,18 +62,49 @@ canvas {
     font-size: 18px;
 }
 
-label {
-    width:100px;
-    margin-right: 10px;
-    display: inline-block;
-    font-family: "Arial";
+.lensGroup label{
+    margin-top:5px !important;
 }
+/* /\* beam size input *\/ */
+/* #beam{ */
+/*     background-color: #D1E2E2; */
+/*     width: 80%; */
+/*     padding: 5px; */
+/*     margin: auto; */
+/* } */
+
+/* #beam form{ */
+/*     padding: 10px; */
+/* } */
+/* /\* lens inputs *\/ */
+/* #lenses{ */
+/*     background-color: #F4C8A4; */
+/*     width: 80%; */
+/*     padding: 5px; */
+/*     margin: auto; */
+/* } */
+
+/* #lenses form{ */
+/*     padding: 10px; */
+/*     border: 3px dashed #7a7a7a; */
+/*     background-color: transparent; */
+/*     margin: 10px; */
+/* } */
 
 
-input[type=number]{
-    width: 10%;
-    margin: auto;
-}
+/* label { */
+/*     /\* width:100px; *\/ */
+/*     /\* margin-right: 10px; *\/ */
+/*     /\* display: inline-block; *\/ */
+
+/*     font-family: "Arial"; */
+/* } */
+
+
+/* input[type=number]{ */
+/*     width: 10%; */
+/*     margin: auto; */
+/* } */
 
 /* ranges */
 input[type=range] {
@@ -66,6 +112,13 @@ input[type=range] {
   width: 70%; /* Specific width is required for Firefox. */
   background: transparent; /* Otherwise white in Chrome */
   margin-right: 5px;
+  margin-top: -10px;
+  border: none;
+  box-shadow: none;
+}
+input[type=range]:focus {
+  border: none;
+  box-shadow: none;
 }
 
 input[type=range]::-webkit-slider-thumb {
@@ -81,7 +134,7 @@ input[type=range]::-ms-track {
   cursor: pointer;
 
   /* Hides the slider so custom styles can be added */
-  background: transparent; 
+  background: transparent;
   border-color: transparent;
   color: transparent;
 }
@@ -175,37 +228,37 @@ input[type=range]:focus::-ms-fill-upper {
 }
 
 
-/* button */
-button {
-    box-shadow:inset 0px 1px 0px 0px #54a3f7;
-    background-color: #656684;
-    border-radius:3px;
-    border:1px solid #124d77;
-    cursor:pointer;
-    color:#ffffff;
-    font-family:Arial;
-    font-weight: bold;
-    font-size:13px;
-    padding:6px 24px;
-    text-decoration:none;
-    text-shadow:0px 1px 0px #154682;
-    margin: auto;
-}
-button:hover {
-    background-color: #595a73;
-}
+/* /\* button *\/ */
+/* button { */
+/*     box-shadow:inset 0px 1px 0px 0px #54a3f7; */
+/*     background-color: #656684; */
+/*     border-radius:3px; */
+/*     border:1px solid #124d77; */
+/*     cursor:pointer; */
+/*     color:#ffffff; */
+/*     font-family:Arial; */
+/*     font-weight: bold; */
+/*     font-size:13px; */
+/*     padding:6px 24px; */
+/*     text-decoration:none; */
+/*     text-shadow:0px 1px 0px #154682; */
+/*     margin: auto; */
+/* } */
+/* button:hover { */
+/*     background-color: #595a73; */
+/* } */
 
 
-#addLensAndWaistSize{
-    text-align: center;
-}
+/* #addLensAndWaistSize{ */
+/*     text-align: center; */
+/* } */
 
-.removeLensButton{
-    position: absolute;
-    background-color: #656684;
-    margin-left:77.5%;
-    margin-top: -10px;
-    display: block;
-    z-index: 10;
-    padding: 5px;
-}
+/* .removeLensButton{ */
+/*     position: absolute; */
+/*     background-color: #656684; */
+/*     margin-left:77.5%; */
+/*     margin-top: -10px; */
+/*     display: block; */
+/*     z-index: 10; */
+/*     padding: 5px; */
+/* } */
