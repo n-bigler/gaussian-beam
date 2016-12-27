@@ -59,19 +59,21 @@ var drawBeam = function(beam, ctx, prop, opt){
 var drawLenses = function(stack, beam, ctx, prop){
     var center = prop.canvasHeight/2;
     for(var iLens = 0; iLens < stack.length; iLens++){
-        ctx.beginPath();
-        var pos = prop.posToPx(stack[iLens].pos);
-        ctx.moveTo(pos-10,center*1.8-20);
-        ctx.lineTo(pos,center*1.8);
-        ctx.lineTo(pos+10,center*1.8-20);
-        ctx.moveTo(pos,center*1.8);
-        ctx.lineTo(pos,center*0.2);
-        ctx.moveTo(pos-10,center*0.2+20);
-        ctx.lineTo(pos,center*0.2);
-        ctx.lineTo(pos+10,center*0.2+20);
-        ctx.lineWidth = 2;
-        ctx.strokeStyle = '#C37E8A';
-        ctx.stroke();
+        if(stack[iLens] != undefined){
+            ctx.beginPath();
+            var pos = prop.posToPx(stack[iLens].pos);
+            ctx.moveTo(pos-10,center*1.8-20);
+            ctx.lineTo(pos,center*1.8);
+            ctx.lineTo(pos+10,center*1.8-20);
+            ctx.moveTo(pos,center*1.8);
+            ctx.lineTo(pos,center*0.2);
+            ctx.moveTo(pos-10,center*0.2+20);
+            ctx.lineTo(pos,center*0.2);
+            ctx.lineTo(pos+10,center*0.2+20);
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = '#C37E8A';
+            ctx.stroke();
+        }
     }
 }
 
