@@ -65,7 +65,7 @@ $(document).ready(function(){
                     ,'<div class="form-group row">'
                     ,'<label class="col-xs-2 nopadding col-form-label" for="lens'+lensID+'Pos">Position:</label>'
                     ,'<div class="col-xs-7 nopadding">'
-                    ,'<input class="form-control" type="range" min="0" max="1" value="0.5" data-orientation="vertical" name="lens'+lensID+'Pos">'
+                    ,'<input class="form-control" type="range" min="0" max="'+(prop.z_grid[prop.z_grid.length-1])+'" value="'+(prop.z_grid[prop.z_grid.length-1]/2)+'" data-orientation="vertical" name="lens'+lensID+'Pos">'
                     ,'</div>'
                     ,'<div class="col-xs-3">'
                     ,'<input class="form-control" name="lens'+lensID+'PosNumber" type="number" min="0" max="1" value="0.5"p>'
@@ -171,7 +171,7 @@ $(document).ready(function(){
             newID = lensStack.length;
         }
         console.log("new id: "+newID);
-        var newLens = new lens.Lens(100e-3, 0.5, newID);
+        var newLens = new lens.Lens(100e-3, prop.z_grid[prop.z_grid.length-1]/2, newID);
         lensStack[newLens.id] = newLens;
         console.log(lensStack);
 
@@ -213,6 +213,29 @@ $(document).ready(function(){
         updatePlot(beam);
     });
 
+    /**
+     * Changes the range available for the lense position and 
+     *moves the lenses if they end up being outside of the z-grid.
+     */
+    var moveLenses = function(){
+        for(var iLens = 0; iLens < lensStack.length; iLens++){
+            if(lensStack[iLens] != undefined){
+                var $lensPosNumber = $('input[name=lens'+iLens+'PosNumber]');
+                var $lensPosRange = $('input[name=lens'+iLens+'Pos]');
+                $lensPosRange.attr("step", prop.z_res);
+                $lensPosNumber.attr("step", prop.z_res);
+                $lensPosRange.attr("max", prop.z_grid[prop.z_grid.length-1]);
+                $lensPosNumber.attr("max", prop.z_grid[prop.z_grid.length-1]);
+
+                if(lensStack[iLens].pos > prop.z_grid[prop.z_grid.length-1]){
+                    lensStack[iLens].pos = prop.z_grid[prop.z_grid.length-1];
+                    $lensPosNumber.val(lensStack[iLens].pos);
+                    $lensPosRange.val(lensStack[iLens].pos);
+                }
+            }
+        }
+    }
+
     var $zmaxNumber = $('input[name=zmaxNumber]');
     var $zmaxRange = $('input[name=zmax]');
     $zmaxRange.on('input change', function(){
@@ -220,6 +243,7 @@ $(document).ready(function(){
         $zmaxNumber.val(prop.z_max);        
         prop.z_res = prop.z_max/prop.canvasWidth;
         prop.build_z_grid();
+        moveLenses();
         updatePlot(beam);
     });
 
@@ -229,6 +253,7 @@ $(document).ready(function(){
         $zmaxRange.val(prop.z_max);
         prop.z_res = prop.z_max/prop.canvasWidth;
         prop.build_z_grid();
+        moveLenses();
         updatePlot(beam);
     });
 
