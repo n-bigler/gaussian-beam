@@ -42,7 +42,6 @@ $(document).ready(function(){
         });
         prop.createMatStack(sortedStack);
 
-
         var ctx = $canvas[0].getContext("2d");
         beam.propBeam(prop, {resonator: resonatorMode});
         graphics.drawBeam(beam, ctx, prop, {resonator: resonatorMode});

@@ -20,9 +20,14 @@ var Beam = function(w0, l){
     this.propBeam = function(prop, opt){
         var mat = prop.matStack;
         this.q.forward[0]=math.complex(0, math.PI*this.w0**2/this.l);
+        //the actual matrix length is mat.length-2 because there is one prop matrix 
+        // less than there is z_grid. This means that if there is a lens at the last
+        // position (mat.length-1) it will only have effects in resonator mode
+        console.log("forward");
+        console.log(mat[prop.z_grid.length-2]);
         for(var iz = 1; iz < prop.z_grid.length; iz++){
             var q_old = this.q.forward[iz-1];
-            var mat_curr = mat[iz];
+            var mat_curr = mat[iz-1];
             var scope = {
                 A: math.subset(mat_curr, math.index(0, 0)),
                 B: math.subset(mat_curr, math.index(0, 1)),
@@ -37,10 +42,11 @@ var Beam = function(w0, l){
 
         if('resonator' in opt && opt.resonator === true){
             mat = prop.matStack.slice(0).reverse();
+            console.log(mat[0]);
             this.q.backward[0] = this.q.forward[this.q.forward.length-1];
             for(var iz = 1; iz < prop.z_grid.length; iz++){
                 var q_old = this.q.backward[iz-1];
-                var mat_curr = mat[iz];
+                var mat_curr = mat[iz-1];
                 var scope = {
                     A: math.subset(mat_curr, math.index(0, 0)),
                     B: math.subset(mat_curr, math.index(0, 1)),
