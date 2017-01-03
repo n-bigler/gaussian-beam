@@ -281,7 +281,7 @@ $(document).ready(function(){
         var x = math.floor(evt.clientX - canvasOffset.left);
         var ctx = $canvas[0].getContext("2d");
 
-        graphics.drawBeam(beam, ctx, prop, {resonator: true});
+        graphics.drawBeam(beam, ctx, prop, {resonator: resonatorMode});
         graphics.drawLenses(lensStack, beam, ctx, prop);
         graphics.drawWaists(beam, ctx, prop, $waistSizeDisplay);
 
