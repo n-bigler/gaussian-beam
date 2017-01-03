@@ -16,14 +16,19 @@ $(document).ready(function(){
     
     var lensStack = [];
 
-    var beam = new beam_class.Beam(1e-3, 800e-9);
+    var beam = new beam_class.Beam(300e-6, 800e-9);
     var prop = new prop_class.Prop(1, 2e-3, $("#lensCanvas").width(), $("#lensCanvas").height());    
-    
+    var resonatorMode = false;
 
     var $canvas = $("#lensCanvas");
     var canvasHeight = $("#lensCanvas").height();
     var $waistSizeDisplay = $("#waistSizeDisplay");
-            
+         
+    /**
+     * Updates the beam plot by first recalculating the matrice stack and then
+     * updating the graphics
+     * @beam The beam object
+     */
     var updatePlot = function(beam){
         //sort the lensStack
         var sortedStack = [];
@@ -37,24 +42,43 @@ $(document).ready(function(){
         });
         prop.createMatStack(sortedStack);
 
-        beam.propBeam(prop);
         var ctx = $canvas[0].getContext("2d");
-        graphics.drawBeam(beam, ctx, prop);
+        beam.propBeam(prop, {resonator: resonatorMode});
+        graphics.drawBeam(beam, ctx, prop, {resonator: resonatorMode});
+
         graphics.drawLenses(sortedStack, beam, ctx, prop);
         graphics.drawWaists(beam, ctx, prop, $waistSizeDisplay);
-
    }
 
+    /**
+     * Set un the range sliders and the number inputs for a new lens
+     * @lensID The id of the new lens
+     */
     var setLensDOM = function(lensID){
-        var html = ['<div id="lens'+lensID+'"><button class="removeLensButton" type="button" name="lens'+lensID+'Remove">x</button><form id="lens'+lensID+'Form">'
+        var html = ['<div id="lens'+lensID+'" class="col-xs-6 lensGroup">'
+                    ,'<div class="text-right removeButton">'
+                    ,'<button type="button" name="lens'+lensID+'Remove">x</button>'                    
+                    ,'</div>'
+                    ,'<form id="lens'+lensID+'Form">'
                     ,'<legend>Lens '+(lensID+1)+'</legend>'
-
-                    ,'<label for="lens'+lensID+'Pos">Position:</label>'
-                    ,'<input type="range" min="0" max="1" value="0.5" data-orientation="vertical" name="lens'+lensID+'Pos">'
-                    ,'<input name="lens'+lensID+'PosNumber" type="number" min="0" max="1" value="0.5"p><br>'
-                    ,'<label for="lens'+lensID+'f">Lens focal:</label> '
-                    ,'<input type="range" min="-1" max="1" step="0.01" value="0.1" name="lens'+lensID+'f">'
-                    ,'<input name="lens'+lensID+'fNumber" type="number" min="-1" max="1" step="0.01" value="0.1"><br>'
+                    ,'<div class="form-group row">'
+                    ,'<label class="col-xs-2 nopadding col-form-label" for="lens'+lensID+'Pos">Position:</label>'
+                    ,'<div class="col-xs-7 nopadding">'
+                    ,'<input class="form-control" type="range" min="0" max="'+(prop.z_grid[prop.z_grid.length-1])+'" value="'+(prop.z_grid[prop.z_grid.length-1]/2)+'" data-orientation="vertical" name="lens'+lensID+'Pos">'
+                    ,'</div>'
+                    ,'<div class="col-xs-3">'
+                    ,'<input class="form-control" name="lens'+lensID+'PosNumber" type="number" min="0" max="1" value="0.5"p>'
+                    ,'</div>'
+                    ,'</div>'
+                    ,'<div class="form-group row">'
+                    ,'<label class="col-xs-2 nopadding col-form-label" for="lens'+lensID+'f">Focal:</label> '
+                    ,'<div class="col-xs-7 nopadding">'
+                    ,'<input class="form-control" type="range" min="-1" max="1" step="0.01" value="0.1" name="lens'+lensID+'f">'
+                    ,'</div>'
+                    ,'<div class="col-xs-3">'
+                    ,'<input class="form-control" name="lens'+lensID+'fNumber" type="number" min="-1" max="1" step="0.01" value="0.1">'
+                    ,'</div>'
+                    ,'</div>'
                     ,'</form></div>'].join("");
         $('#lenses').append(html);
     }
@@ -146,7 +170,7 @@ $(document).ready(function(){
             newID = lensStack.length;
         }
         console.log("new id: "+newID);
-        var newLens = new lens.Lens(100e-3, 0.5, newID);
+        var newLens = new lens.Lens(100e-3, prop.z_grid[prop.z_grid.length-1]/2, newID);
         lensStack[newLens.id] = newLens;
         console.log(lensStack);
 
@@ -188,6 +212,29 @@ $(document).ready(function(){
         updatePlot(beam);
     });
 
+    /**
+     * Changes the range available for the lense position and 
+     *moves the lenses if they end up being outside of the z-grid.
+     */
+    var moveLenses = function(){
+        for(var iLens = 0; iLens < lensStack.length; iLens++){
+            if(lensStack[iLens] != undefined){
+                var $lensPosNumber = $('input[name=lens'+iLens+'PosNumber]');
+                var $lensPosRange = $('input[name=lens'+iLens+'Pos]');
+                $lensPosRange.attr("step", prop.z_res);
+                $lensPosNumber.attr("step", prop.z_res);
+                $lensPosRange.attr("max", prop.z_grid[prop.z_grid.length-1]);
+                $lensPosNumber.attr("max", prop.z_grid[prop.z_grid.length-1]);
+
+                if(lensStack[iLens].pos > prop.z_grid[prop.z_grid.length-1]){
+                    lensStack[iLens].pos = prop.z_grid[prop.z_grid.length-1];
+                    $lensPosNumber.val(lensStack[iLens].pos);
+                    $lensPosRange.val(lensStack[iLens].pos);
+                }
+            }
+        }
+    }
+
     var $zmaxNumber = $('input[name=zmaxNumber]');
     var $zmaxRange = $('input[name=zmax]');
     $zmaxRange.on('input change', function(){
@@ -195,19 +242,17 @@ $(document).ready(function(){
         $zmaxNumber.val(prop.z_max);        
         prop.z_res = prop.z_max/prop.canvasWidth;
         prop.build_z_grid();
+        moveLenses();
         updatePlot(beam);
     });
 
 
     $zmaxNumber.on("input change", function(){
-        z_max = $zmaxNumber.val();
-        prop.z_res = z_max/z_grid_size;
-        $zmaxRange.val(z_max);
-        z_grid = [];
-        for(var iz = 0; iz < z_grid_size; iz++){
-            z_grid[iz] = iz*prop.z_res;
-        }
-
+        prop.z_max = $zmaxNumber.val();
+        $zmaxRange.val(prop.z_max);
+        prop.z_res = prop.z_max/prop.canvasWidth;
+        prop.build_z_grid();
+        moveLenses();
         updatePlot(beam);
     });
 
@@ -226,9 +271,13 @@ $(document).ready(function(){
         updatePlot(beam);
     });
 
-
-
-
+    
+    //manage resonator checkbox
+    var $resonatorCB = $('#resonatorCheckbox');
+    $resonatorCB.on('click', function(){
+        resonatorMode = $(this).find('input[type=checkbox]').prop('checked');
+        updatePlot(beam);
+    });
     //manage add lens button
     $('button[name=addLensButton]').on('click', function(){
         addLens();
@@ -238,25 +287,23 @@ $(document).ready(function(){
 
     //manage mouse measurement
     var $waistSizeDisplayMouse = $("#waistSizeDisplayMouse");
-
-
     $canvas.mousemove(function(evt){
         var canvasOffset = $canvas.offset();
         var x = math.floor(evt.clientX - canvasOffset.left);
         var ctx = $canvas[0].getContext("2d");
 
-        graphics.drawBeam(beam, ctx, prop);
+        graphics.drawBeam(beam, ctx, prop, {resonator: true});
         graphics.drawLenses(lensStack, beam, ctx, prop);
         graphics.drawWaists(beam, ctx, prop, $waistSizeDisplay);
 
         ctx.beginPath();
-        ctx.moveTo(x,canvasHeight/2+beam.waistPx[x]);
-        ctx.lineTo(x,canvasHeight/2-beam.waistPx[x]);
+        ctx.moveTo(x,canvasHeight/2+beam.waistPx.forward[x]);
+        ctx.lineTo(x,canvasHeight/2-beam.waistPx.forward[x]);
         ctx.lineWidth = 2;
         ctx.strokeStyle = '#F4C8A4';
         ctx.stroke();
         
-        $waistSizeDisplayMouse.text("Waist size (radius): " + math.round(beam.waist[x]*1e6) + " µm, at " + (math.round(prop.z_grid[x]*1e2)/1e2) + " m");
+        $waistSizeDisplayMouse.text("Waist size (radius): " + math.round(beam.waist.forward[x]*1e6) + " µm, at " + (math.round(prop.z_grid[x]*1e2)/1e2) + " m");
     });
 
     ipcRenderer.on('save-file', function(evt, fileName){

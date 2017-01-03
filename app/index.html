@@ -4,38 +4,72 @@
     <meta charset="UTF-8">
     <link rel="stylesheet" type="text/css" href="lens.css">
     <title>Gaussian Beam</title>
+    <link rel="stylesheet" href="../node_modules/bootstrap/dist/css/bootstrap.min.css">
+    <script>
+      jQuery = require("jquery");
+      require("bootstrap");
+    </script>
     <script src="lensManager.js"></script>
-
+    
   </head>
   <body>
 
-    <canvas id="lensCanvas" width="800px" height="600px"></canvas>
-
-    <div id="lenses"></div>
-
-    <div id="beam">
-      <form>
-        <label for="w0">w0:</label>
-        <input type="range" min="1e-6" max="1e-2" step="1e-6" value="300e-6" data-orientation="vertical" name="w0">
-        <input name="w0Number" type="number" min="1e-6" max="1e-2" value="300e-6" step="1e-6"><br>
-        <label for="ymax">y-max: </label>
-        <input type="range" min="100e-6" max="10e-2" step="100e-6" value="2e-3" data-orientation="vertical" name="ymax">
-        <input name="ymaxNumber" type="number" min="100e-6" max="10e-2" value="2e-3" step="100e-6"><br>
-        <label for="zmax">z-max: </label>
-        <input type="range" min="0.5" max="100" step="0.1" value="1" data-orientation="vertical" name="zmax">
-        <input name="zmaxNumber" type="number" min="100e-6" max="10e-2" value="1" step="0.1"><br>
-
-        <label for="lambda">wavelength: </label>
-        <input type="range" min="1e-9" max="10e-6" step="10e-9" value="800e-9" data-orientation="vertical" name="lambda">
-        <input name="lambdaNumber" type="number" min="1e-9" max="10e-6" value="800e-9" step="10e-9">
-
-
-      </form>
+    <div class="container-fluid text-center">
+      <canvas id="lensCanvas" width="800px" height="600px"></canvas>
     </div>
-    <div id="addLensAndWaistSize">
+
+    <div id="addLensAndWaistSize" class="container-fluid col-xs-offset-1 col-xs-10 text-center waistSizeDisplay">
+      <div class="checkbox" id="resonatorCheckbox">
+        <label><input type="checkbox" value="">Resonator mode</label>
+      </div>
       <p id="waistSizeDisplayMouse">Hover to see the waist size</p>
       <p id="waistSizeDisplay"></p>
-      <button name="addLensButton" type="button">Add lens</button>
+      <button  name="addLensButton" type="button">Add lens</button>
     </div>
+
+    <div id="lenses" class="container-fluid col-xs-offset-1 col-xs-10"></div>
+
+    <div id="beam" class="container-fluid col-xs-offset-1 col-xs-10 beamSizeGroup">
+      <form>
+        <div class="form-group row">
+          <label class="col-xs-1 col-form-label" for="w0">w0:</label>
+          <div class="col-xs-10 nopadding">
+            <input class="form-control" type="range" min="1e-6" max="1e-2" step="1e-6" value="300e-6" data-orientation="vertical" name="w0">
+          </div>
+          <div class="col-xs-1 nopadding">
+            <input class="form-control" name="w0Number" type="number" min="1e-6" max="1e-2" value="300e-6" step="1e-6"><br>
+          </div>
+        </div>
+        <div class="form-group row">
+          <label class="col-xs-1 col-form-label col-form-label-lg" for="ymax">y-max: </label>
+          <div class="col-xs-10 nopadding">
+            <input class="form-control form-control-lg" type="range" min="100e-6" max="10e-2" step="100e-6" value="2e-3" data-orientation="vertical" name="ymax">
+          </div>
+          <div class="col-xs-1 nopadding">
+            <input class="form-control form-control-lg" name="ymaxNumber" type="number" min="100e-6" max="10e-2" value="2e-3" step="100e-6"><br>
+          </div>
+        </div>
+        <div class="form-group row">
+          <label class="col-xs-1 col-form-label col-form-label-lg" for="zmax">z-max: </label>
+          <div class="col-xs-10 nopadding">
+            <input class="form-control form-control-lg" type="range" min="100e-6" max="100" step="0.1" value="1" data-orientation="vertical" name="zmax">
+          </div>
+          <div class="col-xs-1 nopadding">
+            <input class="form-control form-control-lg" name="zmaxNumber" type="number" min="100e-6" max="10e-2" value="1" step="0.1"><br>
+          </div>
+        </div>
+        <div class="form-group row">
+          <label class="col-xs-1 col-form-label col-form-label-lg" for="lambda">wavelength: </label>
+          <div class="col-xs-10 nopadding">
+            <input class="form-control form-control-lg" type="range" min="1e-9" max="10e-6" step="10e-9" value="800e-9" data-orientation="vertical" name="lambda">
+          </div>
+          <div class="col-xs-1 nopadding">
+            <input class="form-control form-control-lg" name="lambdaNumber" type="number" min="1e-9" max="10e-6" value="800e-9" step="10e-9">
+          </div>
+        </div>
+      </form>
+    </div>
+
+
   </body>
 </html>
