@@ -1,6 +1,6 @@
 {
   "name": "gaussianbeam",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Gaussian beam propagation for easy beam shaping",
   "main": "main.js",
   "author": "Nicolas Bigler <nbigler22@gmail.com>",
