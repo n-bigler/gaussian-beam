@@ -19,13 +19,15 @@
     "appId": "ch.ethz.ulp.gaussianbeam",
     "mac.category": "public.app-category.education",
     "dmg": {},
-    "win": {}
+    "win": {
+      "target": "zip"
+    }
   },
   "scripts": {
     "postinstall": "install-app-deps",
     "start": "electron ./app --enable-logging",
     "dev": "NODE_ENV='development' npm run start",
-    "dist": "build -mwl --x64 --ia32",
+    "dist": "build -wml --x64 --ia32",
     "pack": "build -mwl --x64 --ia32 --dir"
   }
 }
