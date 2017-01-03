@@ -13,17 +13,17 @@ $(document).ready(function(){
     var z_max = 1;//1 meter max TODO: allow user to change this
     var z_grid = [];
     //init z_grid
-    
+
     var lensStack = [];
 
     var beam = new beam_class.Beam(300e-6, 800e-9);
-    var prop = new prop_class.Prop(1, 2e-3, $("#lensCanvas").width(), $("#lensCanvas").height());    
+    var prop = new prop_class.Prop(1, 2e-3, $("#lensCanvas").width(), $("#lensCanvas").height());
     var resonatorMode = false;
 
     var $canvas = $("#lensCanvas");
     var canvasHeight = $("#lensCanvas").height();
     var $waistSizeDisplay = $("#waistSizeDisplay");
-         
+
     /**
      * Updates the beam plot by first recalculating the matrice stack and then
      * updating the graphics
@@ -57,7 +57,7 @@ $(document).ready(function(){
     var setLensDOM = function(lensID){
         var html = ['<div id="lens'+lensID+'" class="col-xs-6 lensGroup">'
                     ,'<div class="text-right removeButton">'
-                    ,'<button type="button" name="lens'+lensID+'Remove">x</button>'                    
+                    ,'<button type="button" name="lens'+lensID+'Remove">x</button>'
                     ,'</div>'
                     ,'<form id="lens'+lensID+'Form">'
                     ,'<legend>Lens '+(lensID+1)+'</legend>'
@@ -112,7 +112,7 @@ $(document).ready(function(){
 
         $lensfRange.on('input change', function(){
             lensStack[lensID].f = parseFloat($lensfRange.val());
-            $lensfNumber.val(lensStack[lensID].f);                
+            $lensfNumber.val(lensStack[lensID].f);
 
             updatePlot(beam);
         });
@@ -133,22 +133,11 @@ $(document).ready(function(){
 
         var $lensRemove = $('button[name=lens'+lensID+'Remove]');
         $lensRemove.on("click", function(){
-            console.log("before");
-            console.log(lensStack);
-            for(var iLens = 0; iLens < lensStack.length; iLens++){
-                if(lensStack[iLens] != undefined){
-                    console.log(lensStack[iLens].id);
-                }
-            }
+
             // lensStack.splice(lensID, 1);
             lensStack[lensID] = undefined;
-            console.log("after");
-            console.log(lensStack);
-            for(var iLens = 0; iLens < lensStack.length; iLens++){
-                if(lensStack[iLens] != undefined){
-                    console.log(lensStack[iLens].id);
-                }
-            }
+
+
 
             removeLensDOM(lensID);
             updatePlot(beam);
@@ -169,23 +158,23 @@ $(document).ready(function(){
         if(!idFound){//true if there was no "undefined", so we need to add after the last lens
             newID = lensStack.length;
         }
-        console.log("new id: "+newID);
+
         var newLens = new lens.Lens(100e-3, prop.z_grid[prop.z_grid.length-1]/2, newID);
         lensStack[newLens.id] = newLens;
-        console.log(lensStack);
+
 
         setLensDOM(newLens.id);
         setLensListeners(newLens.id);
         updatePlot(beam);
     }
-    
+
 
     //event management
     var $w0Number = $('input[name=w0Number]');
     var $w0Range = $('input[name=w0]');
     $w0Range.on('input change', function(){
         beam.w0 = $w0Range.val();
-        $w0Number.val(beam.w0);        
+        $w0Number.val(beam.w0);
         updatePlot(beam);
     });
 
@@ -201,7 +190,7 @@ $(document).ready(function(){
     var $ymaxRange = $('input[name=ymax]');
     $ymaxRange.on('input change', function(){
         prop.y_max = $ymaxRange.val();
-        $ymaxNumber.val(prop.y_max);        
+        $ymaxNumber.val(prop.y_max);
         updatePlot(beam);
     });
 
@@ -213,7 +202,7 @@ $(document).ready(function(){
     });
 
     /**
-     * Changes the range available for the lense position and 
+     * Changes the range available for the lense position and
      *moves the lenses if they end up being outside of the z-grid.
      */
     var moveLenses = function(){
@@ -239,7 +228,7 @@ $(document).ready(function(){
     var $zmaxRange = $('input[name=zmax]');
     $zmaxRange.on('input change', function(){
         prop.z_max = $zmaxRange.val();
-        $zmaxNumber.val(prop.z_max);        
+        $zmaxNumber.val(prop.z_max);
         prop.z_res = prop.z_max/prop.canvasWidth;
         prop.build_z_grid();
         moveLenses();
@@ -260,7 +249,7 @@ $(document).ready(function(){
     var $lambdaRange = $('input[name=lambda]');
     $lambdaRange.on('input change', function(){
         beam.l = $lambdaRange.val();
-        $lambdaNumber.val(beam.l);        
+        $lambdaNumber.val(beam.l);
         updatePlot(beam);
     });
 
@@ -271,7 +260,7 @@ $(document).ready(function(){
         updatePlot(beam);
     });
 
-    
+
     //manage resonator checkbox
     var $resonatorCB = $('#resonatorCheckbox');
     $resonatorCB.on('click', function(){
@@ -302,7 +291,7 @@ $(document).ready(function(){
         ctx.lineWidth = 2;
         ctx.strokeStyle = '#F4C8A4';
         ctx.stroke();
-        
+
         $waistSizeDisplayMouse.text("Waist size (radius): " + math.round(beam.waist.forward[x]*1e6) + " µm, at " + (math.round(prop.z_grid[x]*1e2)/1e2) + " m");
     });
 
@@ -324,7 +313,7 @@ $(document).ready(function(){
             }
         }
     }
-    
+
     //modify DOM so that it follows beam properties
     var updateBeamDOM = function(beam){
         var $w0Number = $('input[name=w0Number]');
@@ -379,4 +368,3 @@ $(document).ready(function(){
 
 
 });
-
