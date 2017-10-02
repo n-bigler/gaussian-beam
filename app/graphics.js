@@ -56,6 +56,22 @@ var drawBeam = function(beam, ctx, prop, opt){
     }
 }
 
+var drawB = function(beam, ctx, prop){
+	var center = prop.canvasHeight/2;
+	//find max min
+	var Bmax = Math.max.apply(null,beam.B.forward);
+	var Bmin = Math.min.apply(null, beam.B.forward);
+
+	ctx.beginPath();
+	ctx.lineWidth = 2;
+    ctx.strokeStyle = '#006633';
+    ctx.moveTo(0, center);
+    for(var iz = 1; iz < prop.z_grid.length; iz=iz+5){//only every 10 to speed up
+        ctx.lineTo(iz, center+beam.B.forward[iz]/Bmax*center);
+    }
+    ctx.stroke();
+} 
+
 var drawLenses = function(stack, beam, ctx, prop){
     var center = prop.canvasHeight/2;
     for(var iLens = 0; iLens < stack.length; iLens++){
@@ -123,4 +139,4 @@ var drawWaists = function(beam, ctx, prop, $waistSizeDisplay){
 module.exports.drawBeam = drawBeam;
 module.exports.drawLenses = drawLenses;
 module.exports.drawWaists = drawWaists;
-
+module.exports.drawB = drawB;

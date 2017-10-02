@@ -48,6 +48,7 @@ $(document).ready(function(){
 
         graphics.drawLenses(sortedStack, beam, ctx, prop);
         graphics.drawWaists(beam, ctx, prop, $waistSizeDisplay);
+		graphics.drawB(beam, ctx, prop);
    }
 
     /**
@@ -284,6 +285,7 @@ $(document).ready(function(){
         graphics.drawBeam(beam, ctx, prop, {resonator: resonatorMode});
         graphics.drawLenses(lensStack, beam, ctx, prop);
         graphics.drawWaists(beam, ctx, prop, $waistSizeDisplay);
+		graphics.drawB(beam, ctx, prop);
 
         ctx.beginPath();
         ctx.moveTo(x,canvasHeight/2+beam.waistPx.forward[x]);
