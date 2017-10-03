@@ -58,6 +58,8 @@ var drawBeam = function(beam, ctx, prop, opt){
 
 var drawB = function(beam, ctx, prop){
 	var center = prop.canvasHeight/2;
+
+	//--- Draw Line ---
 	//find max min
 	var Bmax = Math.max.apply(null,beam.B.forward);
 	var Bmin = Math.min.apply(null, beam.B.forward);
@@ -70,6 +72,19 @@ var drawB = function(beam, ctx, prop){
         ctx.lineTo(iz, center+beam.B.forward[iz]/Bmax*center);
     }
     ctx.stroke();
+
+	//--- Draw zero points ---
+	
+	for(var it = 0; it < beam.B.zeroPoints.length; it++){
+		ctx.beginPath();
+		ctx.lineWidth=1;
+	    ctx.strokeStyle = '#006633';
+        ctx.setLineDash([5, 5]);
+	    ctx.moveTo(beam.B.zeroPoints[it], center+center/2);
+		ctx.lineTo(beam.B.zeroPoints[it], center-center/2);
+		ctx.stroke();
+        ctx.setLineDash([]);
+	}
 } 
 
 var drawLenses = function(stack, beam, ctx, prop){

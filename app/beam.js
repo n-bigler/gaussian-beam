@@ -5,13 +5,22 @@ var Beam = function(w0, l){
     this.w0 = w0;
     this.q = {forward: [], backward: []};
     this.waist = {forward: [], backward: []};
-	this.B = {forward: [], backward: []};
+	this.B = {forward: [], zeroPoints: []};
     this.waistPx = {forward: [],backward: []};
     this.l = l;
 
     this.waistFromQ = function(q){
         return math.sqrt(1/(math.im(math.divide(-1, q))*math.PI/this.l));
     }
+
+	this.findBzeros = function(){
+		this.B.zeroPoints = [];
+		for(var iz=1; iz < this.B.forward.length; iz++){
+			if (this.B.forward[iz-1]*this.B.forward[iz] <= 0){
+				this.B.zeroPoints.push(iz);
+			}
+		}
+	}
 
     this.propFormula = math.compile('(A*q + B)/(C*q + D)'); //formula to propagate q through ABCD matrix
     /**
@@ -45,6 +54,7 @@ var Beam = function(w0, l){
            	this.q.forward[iz] = this.propFormula.eval(scope);
 			mat_tot_curr = math.multiply(mat_next, mat_tot_curr); 
 			this.B.forward[iz] = math.subset(mat_tot_curr, math.index(0, 1));            
+			this.findBzeros();	
 			this.waist.forward[iz] = this.waistFromQ(this.q.forward[iz]);
             this.waistPx.forward[iz] = prop.waistToPixel(this.waist.forward[iz]);
         }
@@ -68,6 +78,7 @@ var Beam = function(w0, l){
             }
         }
     }
+
 };
 
 module.exports.Beam = Beam;
