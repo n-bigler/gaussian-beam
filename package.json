@@ -6,7 +6,7 @@
   "author": "Nicolas Bigler <nbigler22@gmail.com>",
   "dependencies": {
     "jquery": "~3.1.1",
-    "mathjs": "~3.8.0",
+    "mathjs": "~>3.17.0",
     "electron-is-dev": "~0.1.2",
     "fs-jetpack": "~0.10.5",
     "bootstrap": "~3.3.7"
